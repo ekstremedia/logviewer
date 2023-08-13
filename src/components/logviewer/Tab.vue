@@ -1,26 +1,37 @@
 <template>
-  <button
-    :class="['px-4 py-2', active ? 'border-b-2 border-blue-500' : 'text-gray-500 hover:text-black']"
-    @click="selectTab">
-    <slot></slot>
-  </button>
-</template>
-
-<script setup>
-const { active } = defineProps(['active']);
-const emit = defineEmits(['select']);
-
-const selectTab = () => {
-  emit('select');
-};
-</script>
-
-<style scoped>
-button {
-  outline: none;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  transition: all 0.3s;
-}
-</style>
+    <button
+      class="px-4 py-2 text-lg font-medium rounded-t-lg transition duration-300 ease-in-out
+        hover:bg-gray-500 hover:text-gray-100 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+      :class="{
+        'bg-gray-700 border border-gray-300': active,
+        'text-gray-400': !active,
+      }"
+      @click="select"
+    >
+      <slot></slot>
+    </button>
+  </template>
+  
+  <script setup>
+  import { defineProps, defineEmits } from 'vue';
+  
+  // Define properties
+  const props = defineProps({
+    active: Boolean,
+  });
+  
+  // Define emits
+  const emit = defineEmits(['select']);
+  
+  // Function to emit select event
+  const select = () => {
+    emit('select');
+  };
+  </script>
+  
+  <style scoped>
+  button {
+    /* Custom styles if needed */
+  }
+  </style>
+  

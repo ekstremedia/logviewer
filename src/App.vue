@@ -5,6 +5,7 @@
       <Tab :active="selectedTab === 1" @select="selectTab(1)">Log Viewer 1</Tab>
       <!-- Add more tabs as needed -->
     </div>
+    <div class="p-4">
     <div v-if="selectedTab === 0">
       <Settings></Settings>
       <!-- Settings Component -->
@@ -12,6 +13,7 @@
     <div v-if="selectedTab === 1">
       <!-- Log Viewer 1 Component -->
     </div>
+</div>
     <!-- Add more tab content as needed -->
   </div>
 </template>
