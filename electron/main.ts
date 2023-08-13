@@ -21,12 +21,12 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 function createWindow() {
     // Get stored window size or use default
-    const {width, height} = getWindowState();
+    const { width, height, x, y } = getWindowState();
     win = new BrowserWindow({
         width,
         height,
-        // width: 100, // Adjust as needed
-        // height: 600, // Adjust as needed    icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
+        x,
+        y,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         },
@@ -35,7 +35,10 @@ function createWindow() {
     // Save window size when it's resized
     win.on('resize', () => {
         setWindowState(win.getBounds());
-    });
+      });
+      win.on('move', () => {
+        setWindowState(win.getBounds());
+      });
 
     // Test active push message to Renderer-process.
     win.webContents.on('did-finish-load', () => {
