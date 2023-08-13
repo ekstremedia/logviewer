@@ -18,32 +18,28 @@ Log Viewer is an Electron application built with Vue 3 and Tailwind CSS. It allo
 
 ### Installation
 
-1. Clone the repository:
+Clone the repository:
 
-   ```bash
-   git clone https://github.com/ekstremedia/logviewer/logviewer.git
+    git clone https://github.com/ekstremedia/logviewer/logviewer.git
+
 Navigate to the project directory:
 
-bash
+    cd logviewer
 
-cd logviewer
-Install dependencies:
+### Install dependencies:
 
-bash
+    npm install
 
-npm install
-Development
+### Development
 To start the development server:
 
-bash
+    npm run dev
 
-npm run dev
-Building
+### Building
 To build the application for production:
 
-bash
+    npm run build
 
-npm run build
 Recommended Extensions for Development
 If you are using VS Code, the following extensions are recommended for Vue development:
 
