@@ -1,7 +1,7 @@
 <template>
   <div class="">
-    <div class="flex space-x-4 border-b">
-      <Tab :active="selectedTab === 0" @select="selectTab(0)"><font-awesome-icon icon="cog" fixedWidth />  Settings </Tab>
+    <div class="flex space-x-4 border-b border-b-gray-600 shadow-lg mt-1">
+      <Tab :active="selectedTab === 0" @select="selectTab(0)"><font-awesome-icon icon="cog" fixedWidth class="text-green-500 shadow-sm" />  Settings </Tab>
       <Tab :active="selectedTab === 1" @select="selectTab(1)">Log Viewer 1</Tab>
       <Tab :active="selectedTab === 2" @select="selectTab(2)">Log Viewer 2</Tab>
       <!-- Add more tabs as needed -->
