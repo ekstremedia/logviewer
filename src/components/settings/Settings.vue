@@ -22,28 +22,27 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, watchEffect } from 'vue';
   import AddLog from './AddLog.vue';
   
-  // Reference to the list of logs
-  const logs = ref(JSON.parse(localStorage.getItem('logs') || '[]'));
+  const logs = ref([]);
   
   // Function to load logs from localStorage
   const loadLogs = () => {
     logs.value = JSON.parse(localStorage.getItem('logs') || '[]');
   };
   
-  // Function to remove a log by index
+  // Function to remove a log
   const removeLog = (index) => {
     logs.value.splice(index, 1);
     localStorage.setItem('logs', JSON.stringify(logs.value));
   };
   
+  // Watch the logs and reload when there's a change
+  watchEffect(() => {
+    loadLogs();
+  });
+  
   // Initial load of logs
   loadLogs();
   </script>
-  
-  <style scoped>
-  /* You can add specific CSS styles here if needed */
-  </style>
-  
