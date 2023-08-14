@@ -53,8 +53,9 @@
                     value="daily"
                     v-model="log.type"
                     class="mr-2"
+                    @change="updateFilename"
                 />
-                Daily (e.g., "laravel-2023-08-10.log")
+                Daily (e.g., "laravel")
             </label>
             <label class="block mt-1">
                 <input
@@ -62,9 +63,25 @@
                     value="static"
                     v-model="log.type"
                     class="mr-2"
+                    @change="updateFilename"
                 />
                 Static (e.g., "laravel.log")
             </label>
+        </div>
+
+        <!-- Log Filename Input -->
+        <div class="mb-4">
+            <label
+                for="logFilename"
+                class="block text-sm font-medium text-gray-300"
+                >Filename</label
+            >
+            <input
+                type="text"
+                id="logFilename"
+                v-model="log.filename"
+                class="mt-1 p-2 w-full rounded-md border-gray-300 focus:ring focus:ring-opacity-50"
+            />
         </div>
 
         <!-- Save Log Button -->
@@ -89,47 +106,60 @@
 import { ref, computed } from "vue";
 import { useLogsStore } from "@/piniaStore"; // Import the logs store
 
-const log = ref({ name: "", directory: "", type: "daily" });
+const log = ref({ name: "", directory: "", type: "daily", filename: "laravel" });
 const directoryExists = ref(false);
 const error = ref("");
 
 // Use the logs store
 const logsStore = useLogsStore();
 
+// Function to update the filename based on the selected log type
+const updateFilename = () => {
+  log.value.filename = log.value.type === "daily" ? "laravel" : "laravel.log";
+};
+
 // Function to normalize the directory path by removing any trailing slashes
 const normalizePath = (path) => path.replace(new RegExp("/+$"), "");
 
 // Function to check if the directory exists
 const checkDirectory = async () => {
-  const normalizedDirectory = normalizePath(log.value.directory);
-  const existingLog = logsStore.logs.find(
-    (existingLog) => normalizePath(existingLog.directory) === normalizedDirectory
-  );
-  if (existingLog) {
-    error.value = `The specified directory is already in use by the log named "${existingLog.name}" with type "${existingLog.type}".`;
-    directoryExists.value = false;
-    return;
-  }
-  directoryExists.value = await window.electron.invoke("check-directory", normalizedDirectory);
-  if (!directoryExists.value) {
-    error.value = "The specified directory does not exist.";
-  } else {
-    error.value = "";
-  }
+    const normalizedDirectory = normalizePath(log.value.directory);
+    const existingLog = logsStore.logs.find(
+        (existingLog) =>
+            normalizePath(existingLog.directory) === normalizedDirectory
+    );
+    if (existingLog) {
+        error.value = `The specified directory is already in use by the log named "${existingLog.name}" with type "${existingLog.type}".`;
+        directoryExists.value = false;
+        return;
+    }
+    directoryExists.value = await window.electron.invoke(
+        "check-directory",
+        normalizedDirectory
+    );
+    if (!directoryExists.value) {
+        error.value = "The specified directory does not exist.";
+    } else {
+        error.value = "";
+    }
 };
 
 // Computed property to determine if the form can be saved
 const canSave = computed(() => {
-  return log.value.name.trim() && log.value.directory.trim() && directoryExists.value;
+    return (
+        log.value.name.trim() &&
+        log.value.directory.trim() &&
+        directoryExists.value
+    );
 });
 
 // Save Log Function
 const saveLog = async () => {
-  error.value = "";
-  await checkDirectory();
-  if (error.value) return;
-  log.value.directory = normalizePath(log.value.directory);
-  logsStore.addLog(log.value); // Use the logs store to add the log
-  log.value = { name: "", directory: "", type: "daily" };
+    error.value = "";
+    await checkDirectory();
+    if (error.value) return;
+    log.value.directory = normalizePath(log.value.directory);
+    logsStore.addLog(log.value); // Use the logs store to add the log
+    log.value = { name: "", directory: "", type: "daily" };
 };
 </script>
