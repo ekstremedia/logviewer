@@ -1,60 +1,53 @@
-import {app, BrowserWindow} from 'electron'
-import { getWindowState, setWindowState } from './windowState.ts';
-import path from 'node:path'
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { getWindowState, setWindowState } from './windowState';
+import path from 'node:path';
+import fs from 'fs';
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.js
-// │
-process.env.DIST = path.join(__dirname, '../dist')
-process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
+// Set the environment variables for DIST and PUBLIC
+process.env.DIST = path.join(__dirname, '../dist');
+process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
 
+// IPC handler to check if a directory exists
+ipcMain.handle('check-directory', (event, path) => fs.existsSync(path));
 
-let win: BrowserWindow | null
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+let win: BrowserWindow | null;
+const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']; // Dev server URL if running in development mode
 
 function createWindow() {
-    // Get stored window size or use default
-    const { width, height, x, y } = getWindowState();
-    win = new BrowserWindow({
-        width,
-        height,
-        x,
-        y,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-        },
-    })
+  // Retrieve stored window size and position or use default values
+  const { width, height, x, y } = getWindowState();
 
-    // Save window size when it's resized
-    win.on('resize', () => {
-        setWindowState(win.getBounds());
-      });
-      win.on('move', () => {
-        setWindowState(win.getBounds());
-      });
+  // Create the browser window with the specified dimensions and preload script
+  win = new BrowserWindow({
+    width,
+    height,
+    x,
+    y,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
 
-    // Test active push message to Renderer-process.
-    win.webContents.on('did-finish-load', () => {
-        win?.webContents.send('main-process-message', (new Date).toLocaleString())
-    })
+  // Save window size and position when resized or moved
+  win.on('resize', () => setWindowState(win.getBounds()));
+  win.on('move', () => setWindowState(win.getBounds()));
 
-    if (VITE_DEV_SERVER_URL) {
-        win.loadURL(VITE_DEV_SERVER_URL)
-    } else {
-        // win.loadFile('dist/index.html')
-        win.loadFile(path.join(process.env.DIST, 'index.html'))
-    }
+  // Send a message to the renderer process when the window is ready
+  win.webContents.on('did-finish-load', () => win?.webContents.send('main-process-message', (new Date).toLocaleString()));
+
+  // Load the application from the appropriate source depending on the mode (development or production)
+  if (VITE_DEV_SERVER_URL) {
+    win.loadURL(VITE_DEV_SERVER_URL); // Load from dev server in development mode
+  } else {
+    win.loadFile(path.join(process.env.DIST, 'index.html')); // Load from static file in production mode
+  }
 }
 
-app.on('window-all-closed', () => {
-    win = null
-})
+// Create the main window when the application is ready
+app.whenReady().then(createWindow);
 
-app.whenReady().then(createWindow)
+// Set the window to null when all windows are closed
+app.on('window-all-closed', () => {
+  win = null;
+});
+      
