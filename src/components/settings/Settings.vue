@@ -11,7 +11,7 @@
             <div
                 v-for="(log, index) in logs"
                 :key="index"
-                class="mb-2 flex justify-evenly border-b border-b-gray-50/20 border-dashed"
+                class="mb-2 flex justify-evenly border-b border-b-gray-50/20 border-b-dashed"
             >
                 <span class="font-medium text-gray-100  text-left w-full">{{ log.name }}:</span>
                 <span class="text-gray-300 ml-2 w-full">{{ log.directory }}</span>
@@ -29,10 +29,17 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from "vue";
+import { watchEffect } from "vue";
 import AddLog from "./AddLog.vue";
+import { useLogsStore } from "@/piniaStore"; // Import the logs store
 
-const logs = ref([]);
+// Use the logs store
+const logsStore = useLogsStore();
+
+// Load logs from the store
+const logs = logsStore.logs;
+
+
 
 // Function to load logs from localStorage
 const loadLogs = () => {
@@ -41,8 +48,7 @@ const loadLogs = () => {
 
 // Function to remove a log
 const removeLog = (index) => {
-    logs.value.splice(index, 1);
-    localStorage.setItem("logs", JSON.stringify(logs.value));
+  logsStore.removeLog(index); // Call the removeLog action from the store
 };
 
 // Watch the logs and reload when there's a change
