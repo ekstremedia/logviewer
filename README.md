@@ -11,6 +11,8 @@ Log Viewer is an Electron application built with Vue 3 and Tailwind CSS. It allo
 
 ## Getting Started
 
+TLDR: `yarn install && yarn dev`
+
 ### Prerequisites
 
 - Node.js (>= 12.0.0)

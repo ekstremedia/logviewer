@@ -7,14 +7,14 @@
 
         <!-- Saved Logs Section -->
         <div class="mt-4">
-            <h2 class="text-xl font-semibold mb-2">Saved Logs</h2>
+            <h2 class="text-xl font-semibold mb-2">Enabled Log files</h2>
             <div
                 v-for="(log, index) in logs"
                 :key="index"
-                class="mb-2 flex items-center"
+                class="mb-2 flex justify-evenly border-b border-b-gray-50/20 border-dashed"
             >
-                <span class="font-medium text-gray-100">{{ log.name }}:</span>
-                <span class="text-gray-300 ml-2">{{ log.directory }}</span>
+                <span class="font-medium text-gray-100  text-left w-full">{{ log.name }}:</span>
+                <span class="text-gray-300 ml-2 w-full">{{ log.directory }}</span>
 
                 <!-- Remove Log Button -->
                 <button
