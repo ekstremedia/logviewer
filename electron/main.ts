@@ -10,6 +10,28 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.D
 // IPC handler to check if a directory exists
 ipcMain.handle('check-directory', (event, path) => fs.existsSync(path));
 
+ipcMain.handle('tail-log', (event, logPath) => {
+    let content = fs.readFileSync(logPath, 'utf-8');
+    let currentSize = content.length;
+  
+    // Watch the file for changes
+    fs.watchFile(logPath, (curr) => {
+      if (curr.size > currentSize) {
+        const newContent = fs.readFileSync(logPath, { encoding: 'utf-8', start: currentSize, end: curr.size });
+        content += newContent;
+  
+        // Update the current size
+        currentSize = curr.size;
+  
+        // Send the new content to the renderer process
+        event.sender.send('log-updated', newContent);
+      }
+    });
+  
+    // Return the initial content
+    return content;
+  });
+  
 let win: BrowserWindow | null;
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']; // Dev server URL if running in development mode
 
