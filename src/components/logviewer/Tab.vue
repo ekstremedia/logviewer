@@ -13,7 +13,6 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits } from 'vue';
   
   // Define properties
   const props = defineProps({

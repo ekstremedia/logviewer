@@ -100,26 +100,32 @@ const normalizePath = (path) => path.replace(new RegExp("/+$"), "");
 
 // Function to check if the directory exists
 const checkDirectory = async () => {
-  // Normalize the directory path
-  const normalizedDirectory = normalizePath(log.value.directory);
+    // Normalize the directory path
+    const normalizedDirectory = normalizePath(log.value.directory);
 
-  // Fetch existing logs
-  const logs = JSON.parse(localStorage.getItem('logs') || '[]');
+    // Fetch existing logs
+    const logs = JSON.parse(localStorage.getItem("logs") || "[]");
 
-  // Check if the directory already exists in the logs
-  const existingLog = logs.find((existingLog) => normalizePath(existingLog.directory) === normalizedDirectory);
-  if (existingLog) {
-    error.value = `The specified directory is already in use by the log named "${existingLog.name}" with type "${existingLog.type}".`;
-    directoryExists.value = false; // Set directoryExists to false if directory is already in use
-    return;
-  }
+    // Check if the directory already exists in the logs
+    const existingLog = logs.find(
+        (existingLog) =>
+            normalizePath(existingLog.directory) === normalizedDirectory
+    );
+    if (existingLog) {
+        error.value = `The specified directory is already in use by the log named "${existingLog.name}" with type "${existingLog.type}".`;
+        directoryExists.value = false; // Set directoryExists to false if directory is already in use
+        return;
+    }
 
-  directoryExists.value = await window.electron.invoke('check-directory', normalizedDirectory);
-  if (!directoryExists.value) {
-    error.value = 'The specified directory does not exist.';
-  } else {
-    error.value = '';
-  }
+    directoryExists.value = await window.electron.invoke(
+        "check-directory",
+        normalizedDirectory
+    );
+    if (!directoryExists.value) {
+        error.value = "The specified directory does not exist.";
+    } else {
+        error.value = "";
+    }
 };
 
 // Computed property to determine if the form can be saved
